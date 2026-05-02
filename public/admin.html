@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>WA Bot — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/admin.css">
+</head>
+<body>
+<aside class="sidebar">
+  <div class="logo"><div class="icon">💬</div><span>WA Bot</span></div>
+  <div class="nav-items">
+    <div class="nav-item active" data-page="dashboard">📊 <span>Dashboard</span></div>
+    <div class="nav-item" data-page="chat">💬 <span>Konuşmalar</span></div>
+    <div class="nav-item" data-page="customers">👥 <span>Müşteriler</span></div>
+    <div class="nav-item" data-page="support">🆘 <span>Canlı Destek</span> <div class="badge" id="supportBadge">0</div></div>
+    <div class="nav-item" data-page="tags">🏷️ <span>Etiketler</span></div>
+    <div class="nav-item" data-page="settings">⚙️ <span>Ayarlar</span></div>
+  </div>
+  <div class="nav-bottom"><button class="btn-logout" onclick="logout()">Çıkış Yap</button></div>
+</aside>
+
+<main class="main">
+<!-- DASHBOARD -->
+<div class="page active" id="page-dashboard">
+  <h2 class="page-title">Dashboard</h2>
+  <div class="stats-grid">
+    <div class="stat-card green"><div class="val" id="s-customers">—</div><div class="lbl">Toplam Müşteri</div></div>
+    <div class="stat-card blue"><div class="val" id="s-messages">—</div><div class="lbl">Toplam Mesaj</div></div>
+    <div class="stat-card yellow"><div class="val" id="s-today">—</div><div class="lbl">Bugünkü Mesaj</div></div>
+    <div class="stat-card red"><div class="val" id="s-support">—</div><div class="lbl">Destek Bekleyen</div></div>
+  </div>
+  <div class="card"><div class="card-header"><h3>Son Mesajlar</h3></div>
+    <table><thead><tr><th>Telefon</th><th>Yön</th><th>Mesaj</th><th>Tarih</th></tr></thead><tbody id="dashMessages"></tbody></table>
+  </div>
+</div>
+
+<!-- CHAT -->
+<div class="page" id="page-chat">
+  <div class="chat-layout">
+    <div class="chat-sidebar">
+      <div class="chat-sidebar-header">
+        <h3>Konuşmalar</h3>
+        <input type="text" id="chatSearch" placeholder="Telefon ara..." class="search-input">
+      </div>
+      <div class="chat-list" id="chatList"></div>
+    </div>
+    <div class="chat-main" id="chatMain">
+      <div class="chat-empty">
+        <div class="chat-empty-icon">💬</div>
+        <p>Bir konuşma seçin</p>
+      </div>
+    </div>
+    <div class="chat-detail" id="chatDetail" style="display:none">
+      <div class="detail-header"><h3>Müşteri Bilgileri</h3><button class="btn-close-detail" onclick="closeDetail()">✕</button></div>
+      <div class="detail-body" id="detailBody"></div>
+    </div>
+  </div>
+</div>
+
+<!-- CUSTOMERS -->
+<div class="page" id="page-customers">
+  <h2 class="page-title">Müşteriler</h2>
+  <div class="toolbar">
+    <input type="text" id="custSearch" placeholder="Telefon ara..." class="search-input" oninput="searchCustomers()">
+    <select id="custTagFilter" class="filter-select" onchange="filterByTag()"><option value="">Tüm Etiketler</option></select>
+  </div>
+  <div class="card">
+    <table><thead><tr><th>Telefon</th><th>Etiketler</th><th>Son Mesaj</th><th>Mesaj #</th><th>Durum</th><th>İşlem</th></tr></thead><tbody id="customerList"></tbody></table>
+  </div>
+</div>
+
+<!-- SUPPORT -->
+<div class="page" id="page-support">
+  <h2 class="page-title">🆘 Canlı Destek Bekleyenler</h2>
+  <div class="card">
+    <table><thead><tr><th>Telefon</th><th>Son Mesaj</th><th>Tarih</th><th>İşlem</th></tr></thead><tbody id="supportList"></tbody></table>
+  </div>
+</div>
+
+<!-- TAGS -->
+<div class="page" id="page-tags">
+  <h2 class="page-title">🏷️ Etiket Yönetimi</h2>
+  <div class="card">
+    <div class="card-header">
+      <h3>Etiketler</h3>
+      <div class="tag-form">
+        <input type="text" id="newTagName" placeholder="Yeni etiket..." class="search-input" style="width:160px">
+        <input type="color" id="newTagColor" value="#25D366" style="width:36px;height:36px;border:none;border-radius:8px;cursor:pointer">
+        <button class="btn-sm green" onclick="createTag()">+ Ekle</button>
+      </div>
+    </div>
+    <div class="tags-list" id="tagsList"></div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="page" id="page-settings">
+  <h2 class="page-title">Hazır Cevap Ayarları</h2>
+  <div class="card" id="settingsCard">
+    <div class="setting-group"><label>🏠 Karşılama Mesajı</label><textarea id="set-welcome_message"></textarea></div>
+    <div class="setting-group"><label>1️⃣ Hizmetler</label><textarea id="set-menu_1"></textarea></div>
+    <div class="setting-group"><label>2️⃣ Fiyat Bilgisi</label><textarea id="set-menu_2"></textarea></div>
+    <div class="setting-group"><label>3️⃣ Adres / Konum</label><textarea id="set-menu_3"></textarea></div>
+    <div class="setting-group"><label>4️⃣ Çalışma Saatleri</label><textarea id="set-menu_4"></textarea></div>
+    <div class="setting-group"><label>5️⃣ Canlı Destek</label><textarea id="set-menu_5"></textarea></div>
+    <div class="setting-group"><label>❓ Bilinmeyen Mesaj</label><textarea id="set-unknown_message"></textarea></div>
+    <button class="btn-save" onclick="saveSettings()">💾 Kaydet</button>
+  </div>
+</div>
+</main>
+
+<div class="toast" id="toast"></div>
+<script src="/admin.js"></script>
+</body>
+</html>
